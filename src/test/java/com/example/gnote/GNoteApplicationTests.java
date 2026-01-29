@@ -3,13 +3,21 @@ package com.example.gnote;
 import com.example.gnote.design.strategy.PaymentStrategy;
 import com.example.gnote.design.strategy.PaymentStrategyFactory;
 import com.example.gnote.lock.CustomLock;
+import com.example.gnote.mybatis.entity.SysUser;
+import com.example.gnote.mybatis.mapper.UserMapper;
 import com.example.gnote.spring.config.LifecycleConfig;
 import com.example.gnote.spring.lifecycle.MyLifecycleBean;
 import jakarta.annotation.Resource;
+import org.apache.ibatis.io.Resources;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -17,6 +25,26 @@ import java.util.concurrent.TimeUnit;
 class GNoteApplicationTests {
     @Resource
     private PaymentStrategyFactory paymentStrategyFactory;
+    @Test
+    void mybatis() throws IOException {
+        String resource = "mybatis-config.xml";
+        InputStream inputStream = Resources.getResourceAsStream(resource);
+        // SqlSessionFactoryBuilder：建造者模式，负责解析配置文件(解析mybatis-config,UserMapper)，构建SqlSessionFactory
+        //主要把解析出来信息存储configuration
+        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+
+        // SqlSession：MyBatis核心会话对象，封装了数据库连接、事务、Mapper获取、SQL执行等所有操作
+        SqlSession session = sqlSessionFactory.openSession();
+        // MyBatis会为Mapper接口创建jdk动态代理对象，核心：MapperProxyFactory
+        UserMapper userMapper = session.getMapper(UserMapper.class);
+
+        // ===================== 执行Mapper方法，调用SQL（源码核心：MapperProxy.invoke()） =====================
+        SysUser user = userMapper.getUserById(1L);
+        System.out.println("查询结果：" + user.getId());
+
+    }
+
+
 
     @Test
     void design(){

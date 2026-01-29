@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace：对应Mapper接口的全类名，MyBatis通过该值绑定接口与XML -->
+<mapper namespace="com.example.gnote.mybatis.mapper.UserMapper">
+
+    <!-- 查询语句：id对应接口方法名，resultType对应返回值类型 -->
+    <select id="getUserById" resultType="com.example.gnote.mybatis.entity.SysUser">
+        select id,real_name,gender from sys_user where id = ${id}
+    </select>
+
+</mapper>
